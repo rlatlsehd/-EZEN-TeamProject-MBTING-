@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.myapp.persistence.BoardService_Mapper">
+
+
+<insert id="boardInsert" parameterType="HashMap">
+insert into bclass_board(bidx,subject,contents,pwd,ip,midx,filename)
+values(bidx_seq.nextval,#{subject},#{contents},#{pwd},#{ip},#{midx},#{filename})
+</insert>
+
+ 
+<select id="boardTotalCount" resultType="Integer">
+select count(*) as cnt from bclass_board A inner join bclass_member2 B on A.midx=B.midx where bdelYn='N'
+	<include refid="search"></include> 
+</select>
+
+<select id="boardTotalCount2" parameterType="Integer" resultType="Integer">
+select count(*) as cnt from bclass_board A inner join bclass_member2 B on A.midx=B.midx where bdelYn='N' and A.midx=#{midx}
+<include refid="search"></include> 
+</select>
+
+
+<select id="boardSelectAll" parameterType="scri" resultType="bv">
+<![CDATA[select B.rnum,B.* from  
+(select rownum as rnum, A.* from 
+	(select * from bclass_board C inner join bclass_member2 D on C.midx=D.midx where bdelyn='N' ]]>
+	<include refid="search"></include> 
+<![CDATA[	order by bidx desc ) A  
+where rownum <= #{page}*#{perPageNum}) B 
+where B.rnum >=(#{page}-1)*#{perPageNum}+1
+]]>
+</select>
+
+<select id="boardSelectAll2" parameterType="HashMap" resultType="bv">
+<![CDATA[select B.rnum,B.* from  
+(select rownum as rnum, A.* from 
+	(select * from bclass_board C inner join bclass_member2 D on C.midx=D.midx where bdelyn='N' and C.midx=#{midx} ]]>
+	<include refid="search"></include> 
+<![CDATA[	order by bidx desc ) A  
+where rownum <= #{scri.page}*#{scri.perPageNum}) B 
+where B.rnum >=(#{scri.page}-1)*#{scri.perPageNum}+1
+]]>
+</select>
+
+
+<sql id="search">
+<if test="searchType != null and searchType.equals('membernickname')">
+and membernickname like  '%'||#{keyword}||'%'
+</if>
+<if test="searchType != null and searchType.equals('subject')">
+and subject like  '%'||#{keyword}||'%'
+</if>
+</sql>
+
+<select id="boardSelectOne" parameterType="Integer" resultType="bv">
+select * from bclass_board where bdelyn='N' and bidx = #{bidx}
+</select>
+
+
+<select id="commentSelectAll" parameterType="Integer" resultType="cv">
+<![CDATA[select B.rnum,B.* from  
+(select rownum as rnum, A.* from 
+	(select * from bclass_comment C inner join bclass_member2 D on C.midx=D.midx where cdelyn='N' and bidx=#{bidx}
+	order by cidx desc) A  
+where rownum <= 5) B 
+where B.rnum >=1
+]]>
+
+</select>
+
+<insert id="commentInsert" parameterType="cv">
+ insert into bclass_comment(cidx,c_contents,bidx,midx) 
+ values(cidx_seq.nextval,#{c_contents},#{bidx},#{midx})
+
+</insert>
+
+
+<update id="commentDel" parameterType="Integer">
+update bclass_comment set cdelYn='Y',writeday=sysdate where cidx=#{cidx}
+</update>
+
+
+
+<select id="commentMo" parameterType="HashMap" resultType="cv">
+<![CDATA[select B.rnum,B.* from  
+(select rownum as rnum, A.* from 
+	(select * from bclass_comment C inner join bclass_member2 D on C.midx=D.midx where cdelyn='N' and bidx=#{bidx}
+	order by cidx desc) A  
+where rownum <= 5*#{page}) B 
+where B.rnum >=1
+]]>
+
+</select>
+
+
+<select id="commentTotalPage" parameterType="Integer" resultType="Integer">
+select ceil(count(*)/5) as cnt from bclass_comment where cdelyn='N' and bidx=#{bidx}
+
+</select>
+
+<update id="boardModify" parameterType="HashMap">
+update bclass_board set subject=#{subject}, contents=#{contents},writeday=sysdate where bidx=#{bidx} and pwd=#{pwd} 
+</update>
+
+<update id="boardDelete">
+update bclass_board set bdelyn='Y',writeday=sysdate where bidx=#{bidx} and pwd = #{pwd}
+</update>
+
+
+
+
+
+</mapper>

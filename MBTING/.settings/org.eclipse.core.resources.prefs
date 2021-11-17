@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/ezen/myapp/controller/BoardController.java=UTF-8
+encoding//src/main/java/com/ezen/myapp/controller/MemberController.java=UTF-8
+encoding//src/main/java/com/ezen/myapp/persistence/MemberService_Mapper.java=UTF-8
+encoding//src/main/webapp/WEB-INF/views/home.jsp=UTF-8

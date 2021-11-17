@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.myapp.persistence.MemberService_Mapper">
+
+<select id="memberLogin" parameterType="String" resultType="mv">
+select * from bclass_member2 where memberid = #{0} and memberpwd=#{1} and mdelYn='N'
+</select>
+
+<insert id="memberInsert" parameterType="HashMap">
+insert into bclass_member2(midx, memberid, memberpwd, membername, membernickname, membergender, memberbirth, memberemail, memberphone, membermbti, memberaddr, aggrement,photo,intro)
+values(midx_seq.nextval,#{memberid},#{memberpwd},#{membername},#{membernickname},#{membergender},#{memberbirth},#{memberemail},#{memberphone},#{membermbti}, #{memberaddr}, #{aggrement},#{photo},#{intro})
+</insert>
+
+<select id="memberSelectOne" parameterType="Integer" resultType="mv">
+select * from bclass_member2 where mdelYN='N' and midx = #{midx}
+</select>
+
+<select id="memberFindId" parameterType="String" resultType="mv">
+select * from bclass_member2 where membername=#{0} and memberemail=#{1}
+</select>
+
+<select id="memberFindPwd" parameterType="String" resultType="mv">
+select * from bclass_member2 where memberid=#{0} and memberemail=#{1}
+</select>
+
+<update id="memberProfileModify" parameterType="HashMap">
+update bclass_member2 set membername=#{membername}, memberpwd=#{memberpwd} , memberphone=#{memberphone}, memberaddr=#{memberaddr}, membermbti=#{membermbti},
+	<if test="photo != null">photo=#{photo},</if>
+intro=#{intro}  where midx=#{midx}
+</update>
+
+<update id="memberDrop" parameterType="HashMap">
+update bclass_member2 set mdelYN='Y',writeday=sysdate where midx=#{midx}
+</update>
+
+
+<!-- 아이디 중복 체크 -->
+<select id="memberIdCheck" parameterType="String" resultType="int">
+select count(memberid) from bclass_member2 where memberid=#{memberid}
+</select>
+
+<!-- 이메일 중복 체크 -->
+<select id="memberEmailCheck" parameterType="String" resultType="int">
+select count(memberemail) from bclass_member2 where memberemail=#{memberemail}
+</select>
+
+<!-- 닉네임 중복 체크 -->
+<select id="memberNickCheck" parameterType="String" resultType="int">
+select count(membernickname) from bclass_member2 where membernickname=#{membernickname}
+</select>
+
+
+<select id="memberSelectAll" parameterType="HashMap" resultType="mv">
+select B.rnum,B.* from  
+(select rownum as rnum, A.* from 
+	(select distinct * from bclass_member2 where mdelyn='N'	
+	<if test="mmt != null and mmt.equals('ENFJ')">
+		and membermbti in('ESTP','ESFP','ISTJ','ENTP') 
+	</if>
+	<if test="mmt != null and mmt.equals('ESFP')">
+		and membermbti in('ESTJ','ENTJ','INTP','ENFJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('ESTJ')">
+		and membermbti in('ESFP','ENTP','ENFP','INFJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('ENTJ')">
+		and membermbti in('ESTP','ESFP','ISFJ','ENFP') 
+	</if>
+	<if test="mmt != null and mmt.equals('ISTP')">
+		and membermbti in('ISFJ','ENFP','INTJ','INFJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('INTP')">
+		and membermbti in('ESFP','ISTJ','ISFJ','INFJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('ESFJ')">
+		and membermbti in('ESTP','ENTP','ENFP','INTJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('ISFP')">
+		and membermbti in('ISTJ','ENTP','INTJ','INFJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('INFP')">
+		and membermbti in('ESTP','ISTJ','ISFJ','INTJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('ESTP')">
+		and membermbti in('ENTJ','ESFJ','ENFJ','INFP') 
+	</if>
+	<if test="mmt != null and mmt.equals('ISTJ')">
+		and membermbti in('INTP','ENFJ','ISFP','INFP') 
+	</if>
+	<if test="mmt != null and mmt.equals('ISFJ')">
+		and membermbti in('ENTJ','ISTP','INTP','INFP') 
+	</if>
+	<if test="mmt != null and mmt.equals('ENTP')">
+		and membermbti in('ESTJ','ESFJ','ENFJ','ISFP') 
+	</if>
+	<if test="mmt != null and mmt.equals('ESFP')">
+		and membermbti in('ESTJ','ENTJ','ISTP','ESFJ') 
+	</if>
+	<if test="mmt != null and mmt.equals('INTJ')">
+		and membermbti in('ISTP','ESFJ','ISFP','INFP') 
+	</if>
+	<if test="mmt != null and mmt.equals('INFJ')">
+		and membermbti in('ESTJ','ISTP','INTP','ISFP') 
+	</if>
+<![CDATA[	order by dbms_random.value ) A  
+where rownum <= 10) B 
+where B.rnum >=1
+]]>
+</select>
+
+
+
+
+</mapper>
