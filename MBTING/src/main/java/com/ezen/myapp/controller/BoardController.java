@@ -90,11 +90,7 @@ public class BoardController  {
 	@RequestMapping(value="/boardList.do")
 	public String boardList(SearchCriteria scri, Model model) {
 		
-		// serviceimpl 처占쏙옙
-		// 占쏙옙체 占쏙옙占쏙옙占쏙옙 占싱아놂옙占쏙옙
-		// 占쏙옙체占쏙옙占쏙옙트 占싱아놂옙占쏙옙
-		// 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙커占쏙옙 占쏙옙占�
-		// Model占쏙옙 占쏙옙티占� 화占썽에 占싼깍옙占�
+
 	int cnt = bs.boardTotalCount(scri);
 	System.out.println("cnt"+cnt);
 	ArrayList<BoardVo> alist = 	bs.boardSelectAll(scri);
